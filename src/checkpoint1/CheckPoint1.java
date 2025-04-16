@@ -33,8 +33,6 @@ public class CheckPoint1 {
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();   
         glFrustum(-1, 1, -0.75, 0.75, 1, 100);
-        glEnable(GL_TEXTURE_2D);
-        glEnableClientState (GL_TEXTURE_COORD_ARRAY);
         glMatrixMode(GL_MODELVIEW);
         glEnable(GL_DEPTH_TEST);
         glClearColor(0f, 0f, 0f, 1f);
