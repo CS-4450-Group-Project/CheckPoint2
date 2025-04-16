@@ -13,7 +13,7 @@ import java.io.*;
 import java.util.*;
 
 
-//testing commits
+//testing commits with this comment
 public class CheckPoint1 {
 
     private float camX = 0, camY = 0, camZ = 5;
