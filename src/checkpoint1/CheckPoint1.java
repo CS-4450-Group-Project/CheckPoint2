@@ -31,8 +31,10 @@ public class CheckPoint1 {
 
     private void initGL() {
         glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
+        glLoadIdentity();   
         glFrustum(-1, 1, -0.75, 0.75, 1, 100);
+        glEnable(GL_TEXTURE_2D);
+        glEnableClientState (GL_TEXTURE_COORD_ARRAY);
         glMatrixMode(GL_MODELVIEW);
         glEnable(GL_DEPTH_TEST);
         glClearColor(0f, 0f, 0f, 1f);
@@ -40,7 +42,7 @@ public class CheckPoint1 {
     }
 
     Random rand = new Random();
-    SimplexNoise noise = new SimplexNoise(64, 0.4, rand.nextInt());
+    SimplexNoise noise = new SimplexNoise(256, 0.4, rand.nextInt());
     private void renderLoop() {
         while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
