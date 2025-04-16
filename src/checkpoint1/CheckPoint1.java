@@ -11,15 +11,12 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse; // for using Mouse
 import java.io.*;
 import java.util.*;
+import java.util.Random;
 
-
-//testing commits with this comment
 public class CheckPoint1 {
 
-    private float camX = 0, camY = 0, camZ = 5;
-    private float pitch = 0, yaw = 0;
-    private final float speed = 0.1f;
-
+    Camera cam = new Camera();
+    
     public void start() {
         try {
             Display.setDisplayMode(new DisplayMode(640, 480));
@@ -42,111 +39,40 @@ public class CheckPoint1 {
         Mouse.setGrabbed(true);
     }
 
+    Random rand = new Random();
+    SimplexNoise noise = new SimplexNoise(64, 0.4, rand.nextInt());
     private void renderLoop() {
         while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            updateCamera();
+            cam.updateCamera();
             glLoadIdentity();
-            applyCamera();
+            cam.applyCamera();
 
-            drawCube();
+            int gridSize = 30;
+            float spacing = 1.0f;
+
+            int maxHeight = 10;
+
+            for (int x = 0; x < gridSize; x++) {
+                for (int z = 0; z < gridSize; z++) {
+                    // Use simplex noise to get height
+                    double noiseVal = noise.getNoise(x, z);
+                    int height = (int) ((noiseVal + 1) / 2 * maxHeight); // Normalize from [-1,1] to [0,1] then scale
+
+                    for (int y = 0; y < height; y++) {
+                        glPushMatrix();
+                        glTranslatef(x * spacing, y * spacing, z * spacing);
+                        Cube.drawCube();
+                        glPopMatrix();
+                    }
+                }
+            }
 
             Display.update();
             Display.sync(60);
         }
         Display.destroy();
-    }
-
-    private void updateCamera() {
-        yaw += Mouse.getDX() * 0.1f;
-        pitch -= Mouse.getDY() * 0.1f;
-
-        float dx = (float) Math.sin(Math.toRadians(yaw)) * speed;
-        float dz = (float) Math.cos(Math.toRadians(yaw)) * speed;
-        
-        // Moving In
-        if (Keyboard.isKeyDown(Keyboard.KEY_S) || Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
-            camX -= dx;
-            camZ += dz;
-        }
-        // Moving Out
-        if (Keyboard.isKeyDown(Keyboard.KEY_W)|| Keyboard.isKeyDown(Keyboard.KEY_UP)) {
-            camX += dx;
-            camZ -= dz;
-        }
-        // Moving Up
-        if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) camY += speed;
-        
-        // Moving Down
-        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) camY -= speed;
-        
-        // Moving Right
-        if (Keyboard.isKeyDown(Keyboard.KEY_D) || Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
-            camX += dz;
-            camZ += dx;
-        }
-        // Moving Left
-        if (Keyboard.isKeyDown(Keyboard.KEY_A) || Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
-            camX -= dz;
-            camZ -= dx;
-        }
-
-    }
-
-    private void applyCamera() {
-        glRotatef(pitch, 1, 0, 0);
-        glRotatef(yaw, 0, 1, 0);
-        glTranslatef(-camX, -camY, -camZ);
-    }
-
-    private void drawCube() {
-        float size = 1f;
-        glBegin(GL_QUADS);
-
-        // Front (red)
-        glColor3f(1, 0, 0);
-        glVertex3f(-size, -size, -size);
-        glVertex3f(size, -size, -size);
-        glVertex3f(size, size, -size);
-        glVertex3f(-size, size, -size);
-
-        // Back (green)
-        glColor3f(0, 1, 0);
-        glVertex3f(-size, -size, size);
-        glVertex3f(-size, size, size);
-        glVertex3f(size, size, size);
-        glVertex3f(size, -size, size);
-
-        // Left (blue)
-        glColor3f(0, 0, 1);
-        glVertex3f(-size, -size, size);
-        glVertex3f(-size, -size, -size);
-        glVertex3f(-size, size, -size);
-        glVertex3f(-size, size, size);
-
-        // Right (yellow)
-        glColor3f(1, 1, 0);
-        glVertex3f(size, -size, -size);
-        glVertex3f(size, -size, size);
-        glVertex3f(size, size, size);
-        glVertex3f(size, size, -size);
-
-        // Top (cyan)
-        glColor3f(0, 1, 1);
-        glVertex3f(-size, size, -size);
-        glVertex3f(size, size, -size);
-        glVertex3f(size, size, size);
-        glVertex3f(-size, size, size);
-
-        // Bottom (magenta)
-        glColor3f(1, 0, 1);
-        glVertex3f(-size, -size, -size);
-        glVertex3f(-size, -size, size);
-        glVertex3f(size, -size, size);
-        glVertex3f(size, -size, -size);
-
-        glEnd();
     }
 
     public static void main(String[] args) {
