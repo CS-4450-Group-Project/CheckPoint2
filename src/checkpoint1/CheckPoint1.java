@@ -40,7 +40,7 @@ public class CheckPoint1 {
     }
 
     Random rand = new Random();
-    SimplexNoise noise = new SimplexNoise(256, 0.4, rand.nextInt());
+    SimplexNoise noise = new SimplexNoise(64, 0.4, rand.nextInt());
     private void renderLoop() {
         while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
